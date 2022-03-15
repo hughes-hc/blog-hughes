@@ -3,8 +3,8 @@ require('dotenv-flow').config();
 module.exports = {
   base:process.env.NODE_ENV=='development'?'/':'/',
   lang: 'zh-CN',
-  title: "Artiely'blog",
-  description: 'Artiely的博客',
+  title: "Hughes | 博客",
+  description: 'Hughes的博客',
   shouldPrefetch:true,
   themeConfig: {
     postsDir:path.resolve(__dirname, '../posts'),
@@ -16,19 +16,19 @@ module.exports = {
     navbar: [
       // NavbarItem
       {
-        text: 'Home',
+        text: '博客',
         link: '/',
       },
       {
-        text: 'Timeline',
+        text: '时间线',
         link: '/timeline',
       },
       {
-        text: 'Comment',
+        text: '留言板',
         link: '/comment',
       },
       {
-        text: 'Tags',
+        text: '标签',
         link: '/tag',
       },
       {
@@ -42,5 +42,6 @@ module.exports = {
       '@vuepress/plugin-search',
     ],
   ],
-  theme:'vuepress-theme-dog',
+//   theme: 'vuepress-theme-dog',
+  theme: path.resolve(__dirname, "../vuepress-theme-hughes")
 }

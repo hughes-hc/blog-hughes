@@ -6,12 +6,13 @@
   "license": "MIT",
   "scripts": {
     "yaml": "node yaml.js",
-    "dev": "yarn yaml && vuepress dev docs",
+    "dev": "vuepress dev docs",
     "build": "yarn yaml && vuepress build docs",
     "deploy": "node deploy.sh"
   },
   "dependencies": {
     "@vuepress/plugin-search": "^2.0.0-beta.35",
+    "@vuepress/utils": "^2.0.0-alpha.1",
     "address": "^1.1.2",
     "chalk": "^5.0.0",
     "colorthief": "^2.3.2",
@@ -25,7 +26,6 @@
     "patch-package": "^6.4.7",
     "reading-time": "^1.5.0",
     "remove-markdown": "^0.3.0",
-    "vuepress-theme-dog": "^1.0.0-beta.38",
     "yamljs": "^0.3.0",
     "yargs": "^17.3.1"
   },

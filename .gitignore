@@ -10,3 +10,6 @@ theme
 deploy.local.sh
 docs/.vuepress/dist
 
+yarn.lock
+package-lock.json
+
