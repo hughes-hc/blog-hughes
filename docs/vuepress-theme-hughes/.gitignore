@@ -1,0 +1,11 @@
+node_modules
+.temp
+.cache
+
+.env.local
+.env.*.local
+
+.backup
+
+yarn.lock
+package-lock.json
