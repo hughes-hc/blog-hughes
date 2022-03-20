@@ -155,7 +155,7 @@ function getPostsSidebar(dir) {
   };
 }
 
-const dogTheme = (options, app) => {
+const hughesTheme = (options, app) => {
   return {
     // 初始化之后，所有的页面已经加载完毕
     async onInitialized(app) {
@@ -210,7 +210,7 @@ const dogTheme = (options, app) => {
         app.pages.push(homepage);
       }
     },
-    name: "vuepress-theme-dog",
+    name: "vuepress-theme-hughes",
     alias: Object.fromEntries(
       fs
         .readdirSync(path.resolve(__dirname, "layouts"))

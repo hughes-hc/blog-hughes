@@ -5,33 +5,29 @@
       <!-- <SearchBox /> -->
       <NavbarSearch />
       <nav class="nav">
-        <a
-          :href="item.link"
-          :class="getPath(item.link)"
-          v-for="item in navBar"
-          :target="item.link.startsWith('http')?'_blank':'_self'"
-          class="link"
-          >{{ item.text }}</a
-        >
+        <a :href="item.link"
+           :class="getPath(item.link)"
+           v-for="item in navBar"
+           :target="item.link.startsWith('http')?'_blank':'_self'"
+           class="link">{{ item.text }}</a>
       </nav>
     </div>
   </header>
   <div class="header-mobile">
     <div class="logo"><a href="/">Hughes<span class="blog">blog</span></a></div>
-    <div class="menu-btn" @click="showMenu=!showMenu">
+    <div class="menu-btn"
+         @click="showMenu=!showMenu">
       <i class="iconfont icon-hanbaocaidan"></i>
     </div>
-    
+
   </div>
-  <nav class="nav-mobile" v-show="showMenu">
-      <a
-        :href="item.link"
-        :class="getPath(item.link)"
-        v-for="item in navBar"
-        class="link"
-        >{{ item.text }}</a
-      >
-    </nav>
+  <nav class="nav-mobile"
+       v-show="showMenu">
+    <a :href="item.link"
+       :class="getPath(item.link)"
+       v-for="item in navBar"
+       class="link">{{ item.text }}</a>
+  </nav>
 </template>
 <script setup>
 import { useSiteData, usePageData } from "@vuepress/client";
@@ -42,7 +38,7 @@ import { computed, onMounted, ref } from "vue";
 const navBar = __NAVBAR__;
 const path = ref();
 
-const showMenu  = ref(false)
+const showMenu = ref(false);
 const getPath = (link) => {
   if (!link || !path.value) return;
   return path.value == link || path.value == `${link}/` ? "active" : "";
@@ -56,7 +52,7 @@ onMounted(() => {
 .header {
   height: var(--nav-height);
   position: fixed;
-  z-index: 9;
+  z-index: 50;
   width: 100%;
   top: 0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -72,10 +68,10 @@ onMounted(() => {
     padding-left: 20px;
 
     .blog {
-        position: relative;
-        font-size: 12px;
-        left: 6px;
-        top: -10px;
+      position: relative;
+      font-size: 12px;
+      left: 6px;
+      top: -10px;
     }
   }
   .header-main {
@@ -95,7 +91,7 @@ onMounted(() => {
       font-size: 20px;
       height: var(--nav-height);
       line-height: var(--nav-height);
-      font-weight: bolder;
+      color: var(--text-color);
       &.active {
         color: var(--nav-active-color);
       }
@@ -119,30 +115,37 @@ onMounted(() => {
     font-size: 24px;
     padding-left: 20px;
   }
+  .blog {
+    position: relative;
+    font-size: 12px;
+    left: 6px;
+    top: -10px;
+  }
   .menu-btn {
     padding: 1em;
     .iconfont {
       font-size: 2em;
     }
   }
-  
 }
 .nav-mobile {
-    position: fixed;
-    z-index: 10;
-    top: var(--nav-height);
-    left: 0;
-    width: 100%;
-    background: var(--nav-bg);
-    backdrop-filter: saturate(180%) blur(20px);
-    .link {
-      display: block;
-      padding: 1em;
-      font-weight: bold;
-      font-size: 1.5em;
-      font-weight: bolder;
-    }
+  position: fixed;
+  z-index: 50;
+  top: var(--nav-height);
+  left: 0;
+  width: 100%;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(180%) blur(20px);
+  .link {
+    display: block;
+    padding: 1em;
+    font-weight: bold;
+    font-size: 1em;
+    padding: 10px 30px;
+    color: var(--text-color);
+    // font-weight: bolder;
   }
+}
 
 @media (max-width: 900px) {
   .header {

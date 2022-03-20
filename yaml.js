@@ -13,210 +13,212 @@ const fse = require('fs-extra')
 let tempDirName = Date.now()
 
 console.log(
-  `\n 开始批量 frontmatter 避免风险文件将自动备份到.backup/${tempDirName}`
+    `\n 开始批量 frontmatter 避免风险文件将自动备份到.backup/${tempDirName}`
 )
 
-const readDir=(entry, files)=> {
-  const dirInfo = fs.readdirSync(entry);
+const readDir = (entry, files) => {
+    const dirInfo = fs.readdirSync(entry);
 
-  dirInfo.forEach((item) => {
-    const location = path.join(entry, item);
-    const info = fs.statSync(location);
-    if (info.isDirectory()) {
-      readDir(location, files);
-    } else {
-      if ([".md"].includes(path.extname(location))) {
-        files.push(location);
-      }
-    }
-  });
+    dirInfo.forEach((item) => {
+        const location = path.join(entry, item);
+        const info = fs.statSync(location);
+        if (info.isDirectory()&&location.indexOf("Asse") === -1) {
+            readDir(location, files);
+        } else {
+            if ([".md"].includes(path.extname(location))) {
+                files.push(location);
+            }
+        }
+    });
 }
 
-const readFiles=(dir)=> {
-  let files = [];
-  readDir(dir, files);
-  return files;
+const readFiles = (dir) => {
+    let files = [];
+    readDir(dir, files);
+    return files;
 }
 const rgbToHex = (r, g, b) =>
-  "" +
-  [r, g, b]
-    .map((x) => {
-      const hex = x.toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    })
-    .join("");
+    "" +
+    [r, g, b]
+        .map((x) => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        })
+        .join("");
 
 const contentToArray = (dir) => {
-  let content = fs.readFileSync(dir, "utf8");
-  return [content, content.split(/\r\n|\n|\r/gm)];
+    let content = fs.readFileSync(dir, "utf8");
+    return [content, content.split(/\r\n|\n|\r/gm)];
 };
 
 const yamlData = (contentArray) => {
-  let tempYaml = [];
-  let dashIndex = 1;
-  if (contentArray[0] === "---") {
-    for (let i = 1; i < contentArray.length; i++) {
-      if (contentArray[i] === "---") {
-        dashIndex++;
-        continue;
-      } else if (dashIndex >= 2) {
-        continue;
-      }
-      tempYaml.push(contentArray[i]);
+    let tempYaml = [];
+    let dashIndex = 1;
+    if (contentArray[0] === "---") {
+        for (let i = 1; i < contentArray.length; i++) {
+            if (contentArray[i] === "---") {
+                dashIndex++;
+                continue;
+            } else if (dashIndex >= 2) {
+                continue;
+            }
+            tempYaml.push(contentArray[i]);
+        }
     }
-  }
-  return [...tempYaml].filter((x) => x);
+    return [...tempYaml].filter((x) => x);
 };
 
 const yamlToJson = (yamlData) => {
-  const tempYaml = yamlData.join("\r\n");
-  return yaml.load(tempYaml);
+    const tempYaml = yamlData.join("\r\n");
+    return yaml.load(tempYaml);
 };
 
 const getBirthtime = (dir) => {
-  return new Promise((resolve, reject) => {
-    fs.stat(dir, (err, stats) => {
-      if (!err) {
-        resolve(dayjs(stats.birthtime).format("YYYY-MM-DD"));
-      } else {
-        reject(undefined);
-      }
+    return new Promise((resolve, reject) => {
+        fs.stat(dir, (err, stats) => {
+            if (!err) {
+                resolve(dayjs(stats.birthtime).format("YYYY-MM-DD"));
+            } else {
+                reject(undefined);
+            }
+        });
     });
-  });
 };
 
 const getSummary = (content) => {
-  return (
-    removeMd(
-      content
-        .trim()
-        .replace(/---(.*?)---/gs, "")
-        .replace(/^#+\s+(.*)/, "")
-        .replace(/<script setup>(.*?)<\/script>/gs, "")
-        .replace(/(\[(.[^\]]+)\]\((.[^)]+)\))/g, "")
-        .slice(0, 200)
-        .replace(/\r\n|\n|\r/gm, "")
-    ) + " ..."
-  );
+    return (
+        removeMd(
+            content
+                .trim()
+                .replace(/---(.*?)---/gs, "")
+                .replace(/^#+\s+(.*)/, "")
+                .replace(/<script setup>(.*?)<\/script>/gs, "")
+                .replace(/(\[(.[^\]]+)\]\((.[^)]+)\))/g, "")
+                .slice(0, 200)
+                .replace(/\r\n|\n|\r/gm, "")
+        ) + " ..."
+    );
 };
 
 const getCover = (content) => {
-  let pattern = /(?<=\!\[.*\]\()(.+)(?=\))/g;
-  try {
-    return content.match(pattern)[0];
-  } catch (error) {
-    return undefined;
-  }
+    let pattern = /(?<=\!\[.*\]\()(.+)(?=\))/g;
+    try {
+        return content.match(pattern)[0];
+    } catch (error) {
+        return ;
+    }
 };
 
 const getGitName = () => {
-  return execSync("git config user.name").toString().trim();
+    return execSync("git config user.name").toString().trim();
 };
 
 const getMdTitle = (contentArray) => {
-  let h1 = contentArray.filter((v) => v.startsWith("# "))[0];
-  if (h1) {
-    return h1.slice(1).trim();
-  } else {
-    let h2 = contentArray.filter((v) => v.startsWith("## "))[0];
-    if (h2) {
-      return h2.slice(2).trim();
+    let h1 = contentArray.filter((v) => v.startsWith("# "))[0];
+    if (h1) {
+        return h1.slice(1).trim();
+    } else {
+        let h2 = contentArray.filter((v) => v.startsWith("## "))[0];
+        if (h2) {
+            return h2.slice(2).trim();
+        }
+        return;
     }
-    return;
-  }
 };
 
 const getCoverColor = (cover) => {
-  return new Promise((resolve, reject) => {
-    try {
-      ColorThief.getColor(cover).then((color) => {
-        let primary = rgbToHex(color[0], color[1], color[2]);
-        let secondary = rgbToHex(
-          255 - color[0],
-          255 - color[1],
-          255 - color[2]
-        );
-        resolve([primary, secondary]);
-      });
-    } catch {
-      resolve(['dddddd', '8085ab']);
-    }
-  });
+    return new Promise((resolve, reject) => {
+        try {
+            ColorThief.getColor(cover).then((color) => {
+                let primary = rgbToHex(color[0], color[1], color[2]);
+                let secondary = rgbToHex(
+                    255 - color[0],
+                    255 - color[1],
+                    255 - color[2]
+                );
+                resolve([primary, secondary]);
+            });
+        } catch {
+            resolve(['dddddd', '8085ab']);
+        }
+    });
 };
 
 const replaceYaml = (yamlJson = {}, dir, content, contentArray) => {
-  return new Promise(async (resolve, reject) => {
-    let yaml = {};
-    yaml.title = yamlJson.title || getMdTitle(contentArray) || "";
-    yaml.date =
-    dayjs(yamlJson.date )||
-    dayjs((await getBirthtime(dir))) ||
-      dayjs(new Date()).format("YYYY-MM-DD");
-      //
-      const [y,m,d] = dayjs(yaml.date).format('YYYY-MM-DD').split('-')
-      const {gzYear,Animal,gzMonth,gzDay,IMonthCn,IDayCn,ncWeek}=calendar.solar2lunar(y,m,d)
-      //
-    yaml.calendar = [gzYear,Animal,gzMonth,gzDay,IMonthCn,IDayCn,ncWeek]
-    yaml.summary = yamlJson.summary || getSummary(content) || "";
-    yaml.description = yamlJson.description || yaml.summary || "";
-    yaml.cover = yamlJson.cover || getCover(content) || "";
-    yaml.author = yamlJson.author || getGitName();
-    const [primary, secondary] = await getCoverColor(yaml.cover);
-    yaml.primary = yamlJson.primary || primary;
-    yaml.secondary = yamlJson.secondary || secondary;
-    let tim = readingTime(content);
-    yaml.readTime = yamlJson.readTime||tim.text;
-    yaml.words = yamlJson.words||tim.words;
+    return new Promise(async (resolve, reject) => {
+        let yaml = {};
+        yaml.title = yamlJson.title || getMdTitle(contentArray) || "";
+        yaml.date =
+            dayjs(yamlJson.date) ||
+            dayjs((await getBirthtime(dir))) ||
+            dayjs(new Date()).format("YYYY-MM-DD");
+        //
+        const [y, m, d] = dayjs(yaml.date).format('YYYY-MM-DD').split('-')
+        const { gzYear, Animal, gzMonth, gzDay, IMonthCn, IDayCn, ncWeek } = calendar.solar2lunar(y, m, d)
+        //
+        yaml.calendar = [gzYear, Animal, gzMonth, gzDay, IMonthCn, IDayCn, ncWeek]
+        yaml.summary = yamlJson.summary || getSummary(content) || "";
+        yaml.description = yamlJson.description || yaml.summary || "";
+        yaml.cover = yamlJson.cover || getCover(content) || "";
+        yaml.author = yamlJson.author || getGitName();
+        const [primary, secondary] = await getCoverColor(yaml.cover);
+        yaml.primary = yamlJson.primary || primary;
+        yaml.secondary = yamlJson.secondary || secondary;
+        let tim = readingTime(content);
+        yaml.readTime = yamlJson.readTime || tim.text;
+        yaml.words = yamlJson.words || tim.words;
 
-    resolve({ ...yamlJson, ...yaml });
-  });
+        resolve({ ...yamlJson, ...yaml });
+    });
 };
 
 const jsonToYamlArr = (json) => {
-  let yamlArray = [];
+    let yamlArray = [];
 
-  for (let key in json) {
-    yamlArray.push(`${key}: ${json[key]}`);
-  }
-  return ["---", ...yamlArray, "---"];
+    for (let key in json) {
+        yamlArray.push(`${key}: ${json[key]}`);
+    }
+    return ["---", ...yamlArray, "---"];
 };
 
 const writeYaml = (contentArray, newYaml, dir) => {
-  let dashArray = [];
-  contentArray.map((v, i) => {
-    if (v === "---") {
-      dashArray.push(i);
-    }
-  });
-  if (dashArray.length >= 2) {
-    contentArray.splice(dashArray[0], dashArray[1] + 1, ...newYaml);
-  } else {
-    contentArray.splice(0, 0, ...newYaml);
-  }
-  fs.writeFileSync(dir, contentArray.join("\r\n"));
-};
-const  getPosts=(dir)=> {
-  let files = readFiles(dir);
-  files = files.map((fileDir) => {
-    // 读取内容
-    let [content, contentArray] = contentToArray(fileDir);
-    let yaml = yamlData(contentArray);
-    let yamlJson = yamlToJson(yaml);
-    replaceYaml(yamlJson, fileDir, content, contentArray).then((res) => {
-      // 修改
-      let newYaml = jsonToYamlArr(res);
-      writeYaml(contentArray, newYaml, fileDir);
+    let dashArray = [];
+    contentArray.map((v, i) => {
+        if (v === "---") {
+            dashArray.push(i);
+        }
     });
-  });
+    if (dashArray.length >= 2) {
+        contentArray.splice(dashArray[0], dashArray[1] + 1, ...newYaml);
+    } else {
+        contentArray.splice(0, 0, ...newYaml);
+    }
+    fs.writeFileSync(dir, contentArray.join("\r\n"));
+};
+const getPosts = (dir) => {
+    let files = readFiles(dir);
+    files = files.map((fileDir) => {
+        // 读取内容
+        let [content, contentArray] = contentToArray(fileDir);
+        let yaml = yamlData(contentArray);
+        let yamlJson = yamlToJson(yaml);
+        replaceYaml(yamlJson, fileDir, content, contentArray).then((res) => {
+            // 删除目录
+            contentArray.splice(contentArray.findIndex(item => item === '[TOC]'), 1);
+            // 修改
+            let newYaml = jsonToYamlArr(res);
+            writeYaml(contentArray, newYaml, fileDir);
+        });
+    });
 }
 
-let _postsDir = path.resolve(__dirname, "./docs/posts")
-let _tempDir = path.resolve(__dirname, `./.backup/${tempDirName}`)
+let _postsDir = path.resolve("E:/我的笔记")
+let _tempDir = path.resolve(__dirname, `./docs/posts/`)
 
 fse.copy(_postsDir, _tempDir)
-  .then(() => {
-    getPosts(_postsDir);
-  })
-  .catch(err => console.error(err))
+    .then(() => {
+        getPosts(_postsDir);
+    })
+    .catch(err => console.error(err))
 
 
