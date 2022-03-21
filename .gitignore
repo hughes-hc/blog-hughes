@@ -13,5 +13,4 @@ docs/.vuepress/dist
 yarn.lock
 package-lock.json
 
-dist/
-public/
+/dist/

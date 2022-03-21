@@ -3,7 +3,7 @@ var path = require('path')
 var app = express()
 // var opn = require('opn')
 var localhost = require('address').ip()
-let staticDir = '/public'
+let staticDir = '/docs/.vuepress/dist'
 
 app.use(express.static(path.join(__dirname, staticDir)))
 
