@@ -1,7 +1,6 @@
 const { path } = require('@vuepress/utils')
 require('dotenv-flow').config();
 module.exports = {
-    // dest: `docs/.vuepress/public`,
     base: process.env.NODE_ENV == 'development' ? '/' : '/',
     lang: 'zh-CN',
     title: "Hughes | 博客",
@@ -9,8 +8,8 @@ module.exports = {
     shouldPrefetch: true,
     // 个人logo
     head: [
-        ['link', { rel: 'shortcut', type:"image/x-icon", href: './favicon.ico' }],
-        ['link', { rel: 'icon', type:"image/x-icon", href: './favicon.ico' }]
+        ['link', { rel: 'shortcut icon', type:"image/x-icon", href: '/favicon.ico' }],
+        // ['link', { rel: 'icon', type:"image/x-icon", href: '/favicon.ico' }]
     ],
     themeConfig: {
         postsDir: path.resolve(__dirname, '../posts'),
