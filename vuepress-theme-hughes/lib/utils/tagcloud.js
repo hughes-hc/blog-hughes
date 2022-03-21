@@ -4,7 +4,7 @@
 * 说明：
 * */
 
-window.tagcloud = (function(win, doc) { // ns
+const tagcloud = function(win, doc) { // ns
     // 判断对象
     function isObject (obj) {
         return Object.prototype.toString.call(obj) === '[object Object]';
@@ -292,5 +292,8 @@ window.tagcloud = (function(win, doc) { // ns
         return instance;
     };
 
-})(window, document);
+};
 
+export {
+    tagcloud
+}
