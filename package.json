@@ -8,6 +8,7 @@
     "yaml": "node yaml.js",
     "dev": "vuepress dev docs",
     "build": "vuepress build docs",
+    "vercel-build": "vuepress build docs -d dist",
     "deploy": "node deploy.sh"
   },
   "dependencies": {
