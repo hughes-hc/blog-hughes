@@ -8,8 +8,8 @@ module.exports = {
     shouldPrefetch: true,
     // 个人logo
     head: [
-        ['link', { rel: 'shortcut', type:"image/x-icon", href: '/favicon.ico' }],
-        ['link', { rel: 'icon', type:"image/x-icon", href: '/favicon.ico' }]
+        ['link', { rel: 'shortcut', type:"image/x-icon", href: './favicon.ico' }],
+        ['link', { rel: 'icon', type:"image/x-icon", href: './favicon.ico' }]
     ],
     themeConfig: {
         postsDir: path.resolve(__dirname, '../posts'),
