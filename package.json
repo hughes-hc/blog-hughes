@@ -7,7 +7,7 @@
   "scripts": {
     "yaml": "node yaml.js",
     "dev": "vuepress dev docs",
-    "build": "vuepress build docs",
+    "build": "vuepress build docs -d public",
     "deploy": "node deploy.sh"
   },
   "dependencies": {
